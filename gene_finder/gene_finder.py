@@ -20,16 +20,24 @@ def shuffle_string(s):
 
 
 def get_complement(nucleotide):
-    """ Returns the complementary nucleotide
+    """
+    takes in a nucleotide, returns the complement nucleotide
 
-        nucleotide: a nucleotide (A, C, G, or T) represented as a string
-        returns: the complementary nucleotide
+    I added this because there was no unit test for this function. I wanted to test more than just one case.
     >>> get_complement('A')
     'T'
     >>> get_complement('C')
     'G'
     """
-    # TODO: implement this
+    if nucleotide == 'A':
+        return 'T'
+    if nucleotide == 'T':
+        return 'A'
+    if nucleotide == 'C':
+        return 'G'
+    if nucleotide == 'G':
+        return 'C'
+
     pass
 
 def get_reverse_complement(dna):
@@ -38,13 +46,22 @@ def get_reverse_complement(dna):
     
         dna: a DNA sequence represented as a string
         returns: the reverse complementary DNA sequence represented as a string
+
+        I don't think this needs any more unit tests. It seems to work and there aren't 
+        any other noticeably different tests.
     >>> get_reverse_complement("ATGCCCGCTTT")
     'AAAGCGGGCAT'
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     """
-    # TODO: implement this
-    pass
+    complement = ''
+    for  i in range(len(dna)):
+        complement = complement + get_complement(dna[i])
+    reverse_comp = ''
+    for i in range(len(dna)):
+        reverse_comp = reverse_comp + complement[len(dna)-1-i]
+
+    return reverse_comp
 
 def rest_of_ORF(dna):
     """ Takes a DNA sequence that is assumed to begin with a start codon and returns
@@ -57,9 +74,22 @@ def rest_of_ORF(dna):
     'ATG'
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
+
+    I added this to test if it will run properly when the stop codon is not in sequence
+    >>> rest_of_ORF('ATGATAG')
+    'ATGATAG'
     """
-    # TODO: implement this
-    pass
+    stop_codons = ('TAG','TAA','TGA')
+    end_index = len(dna)
+    i = 3
+    while i < (len(dna)-2):
+        codon = dna[i:i+3]
+        if codon in stop_codons:
+            end_index = i
+            return dna[0:end_index]
+        i += 3
+    return dna
+
 
 def find_all_ORFs_oneframe(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence and returns
@@ -70,26 +100,50 @@ def find_all_ORFs_oneframe(dna):
         
         dna: a DNA sequence
         returns: a list of non-nested ORFs
+
+        I don't think this needs any other tests. The unit test is very long and thorough.
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
     # TODO: implement this
-    pass
+    start = 'ATG'
+    i = 0
+    end_index = len(dna)
+    return_variable = []
+    while i < (len(dna)-2):
+        codon = dna[i:i+3]
+        if codon == start:
+            orf = rest_of_ORF(dna[i:])
+            return_variable.append(orf)
+            i += len(orf)
+        i+=3
+    return return_variable
 
 def find_all_ORFs(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence in all 3
         possible frames and returns them as a list.  By non-nested we mean that if an
         ORF occurs entirely within another ORF and they are both in the same frame,
         it should not be included in the returned list of ORFs.
-        
         dna: a DNA sequence
         returns: a list of non-nested ORFs
 
+        I don't think this needs any other tests. The unit test is very long and thorough.
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
-    # TODO: implement this
-    pass
+    start = 'ATG'
+    stop_codons = ('TAG','TAA','TGA')
+    end_index = len(dna)
+    all_orfs = []
+    for i in range(3):
+        while i < (len(dna)-2):
+            codon = dna[i:i+3]
+            if codon == start:
+                orf = rest_of_ORF(dna[i:])
+                all_orfs.append(orf)
+                i+=len(orf)
+            i+=3
+    return all_orfs
 
 def find_all_ORFs_both_strands(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence on both
@@ -97,11 +151,17 @@ def find_all_ORFs_both_strands(dna):
         
         dna: a DNA sequence
         returns: a list of non-nested ORFs
+        I don't think this needs any other tests. The unit test is very long and thorough.
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
-    # TODO: implement this
-    pass
+    actually_all_of_them = []
+    normal_ORFS = find_all_ORFs(dna)
+    reverse_complement = get_reverse_complement(dna)
+    reverse_ORFS = find_all_ORFs(reverse_complement)
+    actually_all_of_them = normal_ORFS + reverse_ORFS
+    return actually_all_of_them
+
 
 
 def longest_ORF(dna):
@@ -157,3 +217,10 @@ def gene_finder(dna, threshold):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
+print get_complement('C')
+print get_reverse_complement('CAT')
+print rest_of_ORF('ATGAAATAA')
+print find_all_ORFs_oneframe('ATGCATGAATGTAGATAGATGTGCCC')
+print find_all_ORFs("ATGCATGAATGTAG")
+print find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
