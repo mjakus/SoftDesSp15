@@ -130,6 +130,7 @@ def find_all_ORFs(dna):
         I don't think this needs any other tests. The unit test is very long and thorough.
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
+
     """
     start = 'ATG'
     stop_codons = ('TAG','TAA','TGA')
