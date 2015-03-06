@@ -62,7 +62,26 @@ class GridWorld():
             if self.actors[lava_coord].unremovable == False:
                 self.actors.pop(lava_coord, None)
         else:
-            self.actors[lava_coord] = Actor( lava_coord, self, './images/lava.jpg' )
+            self.actors[lava_coord] = ObstacleTile( lava_coord, self, './images/lava.jpg' )
+
+    def _add_swamp(self, mouse_pos):
+        swamp_coord = (mouse_pos[0]/50, mouse_pos[1]/50)
+        if self._is_occupied(swamp_coord):
+            if self.actors[swamp_coord].unremovable == False:
+                self.actors.pop(swamp_coord, None)
+        else:
+            self.actors[swamp_coord] = ObstacleTile(swamp_coord, self, './images/swamp.jpg', terrain_cost = 3, is_unpassable = False) 
+
+
+    def get_terrain_cost(self, cell_coord):
+        try:
+            actor = self.actors[cell_coord]
+            if actor.terrain_cost is not None:
+                return actor.terrain_cost
+            else:
+                return 0
+        except:
+            return 0
 
     def main_loop(self):
         running = True
@@ -77,12 +96,16 @@ class GridWorld():
                 elif event.type is pygame.MOUSEBUTTONDOWN:
                     if self.add_tile_type == 'lava':
                         self._add_lava(event.pos)
+                    if self.add_tile_type == 'swamp':
+                        self._add_swamp(event.pos)
                 elif event.type is pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.paul.run_astar(self.cake.cell_coordinates, self)
                         self.paul.get_path()
                     elif event.key == pygame.K_l:
                         self.add_tile_type = 'lava'
+                    elif event.key == pygame.K_s:
+                        self.add_tile_type = 'swamp'
 
 class Actor(object):
     def __init__(self, cell_coordinates, world, image_loc, unremovable = False, is_obstacle = True):
@@ -105,6 +128,12 @@ class Actor(object):
         screen = self.world.screen
         screen.blit(self.image,self.image_rect)
 
+class ObstacleTile(Actor):
+    def __init__(self, cell_coordinates, world, image_loc, terrain_cost=0, is_unpassable = True):
+        super(ObstacleTile, self).__init__(cell_coordinates, world, image_loc, unremovable = False, is_obstacle = is_unpassable)
+        self.terrain_cost = terrain_cost
+
+
 class Cell():
     def __init__(self, draw_screen, coordinates, dimensions):
         self.draw_screen = draw_screen
@@ -122,9 +151,9 @@ class Cell():
 
     def draw(self):
         COST_TO_DRAW = ''
-        #COST_TO_DRAW = self.g_cost
-        #COST_TO_DRAW = self.h_cost
-        #COST_TO_DRAW = self.f_cost
+        # COST_TO_DRAW = self.g_cost
+        # COST_TO_DRAW = self.h_cost
+        COST_TO_DRAW = self.f_cost
         line_width = 2
         rect = pygame.Rect((self.coordinates[0],self.coordinates[1]),(self.dimensions[0],self.dimensions[1]))
         pygame.draw.rect(self.draw_screen, self.color, rect, line_width)
@@ -145,9 +174,11 @@ class Paul(Actor):
 
     def get_open_adj_coords(self, coords):
         """returns list of valid coords that are adjacent to the argument, open, and not in the closed list."""
-        directions = [(1,0),(0,1),(-1,0),(0,-1)]
-        costs = [1,1,1,1]
+        directions = [(1,0),(0,1),(-1,0),(0,-1),(1,1),(1,-1),(-1,1),(-1,-1),(0,2),(2,0),(0,-2),(-2,0)]
+        costs = [1,1,1,1,3,3,3,3,8,8,8,8]
         adj_coords = map(lambda d: self.world._add_coords(coords,d), directions)
+        for i, coord in enumerate(adj_coords):
+            costs[i] += self.world.get_terrain_cost(coord)
         in_bounds = [self.world._is_in_grid(c) and not self.world._is_occupied(c) and c not in self.closed_list for c in adj_coords]
         adj_coords = [c for (idx,c) in enumerate(adj_coords) if in_bounds[idx]]
         costs = [c for (idx,c) in enumerate(costs) if in_bounds[idx]]
