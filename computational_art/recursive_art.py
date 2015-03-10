@@ -33,7 +33,7 @@ def build_random_function(min_depth, max_depth):
         return [f]
     # return random_function
 
-print build_random_function(7,9)
+# print build_random_function(7,9)
 
 def evaluate_random_function(f, x, y):
     """ Evaluate the random function f with inputs x,y
@@ -67,7 +67,7 @@ def evaluate_random_function(f, x, y):
     if f[0] == 'avg':
         return (evaluate_random_function(f[1],x,y) + evaluate_random_function(f[2],x,y))/2.0
 
-print evaluate_random_function(build_random_function(7,9), 7,5)
+print evaluate_random_function(build_random_function(10,15), 7,12)
 
 
 def remap_interval(val, input_interval_start, input_interval_end, output_interval_start, output_interval_end):
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     # Create some computational art!
     # TODO: Un-comment the generate_art function call after you
     #       implement remap_interval and evaluate_random_function
-    generate_art("myart7.png")
+    generate_art("myart13.png")
 
     # Test that PIL is installed correctl
     # TODO: Comment or remove this function call after testing P#IL install

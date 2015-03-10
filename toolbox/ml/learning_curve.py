@@ -11,6 +11,9 @@ print data.DESCR
 num_trials = 10
 train_percentages = range(5,95,5)
 test_accuracies = numpy.zeros(len(train_percentages))
+fig = plt.figure()
+for i in range(10):
+	
 
 # train a model with training percentages between 5 and 90 (see train_percentages) and evaluate
 # the resultant accuracy.
