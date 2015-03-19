@@ -11,10 +11,8 @@ data = load_digits()
 print data.DESCR
 num_trials = 10
 train_percentages = range(5,95,5)
-print len(train_percentages)
 test_accuracies = numpy.zeros(len(train_percentages))
-print len(test_accuracies)
-print type(test_accuracies)
+
 fig = plt.figure()
 for i in range(10):
 	subplot = fig.add_subplot(5,2,i+1)
@@ -38,11 +36,10 @@ for size in train_percentages:
 		model = LogisticRegression(C=10**-10)
 		model.fit(X_train,y_train)
 		total_accuracy += model.score(X_test, y_test)
-
 	test_accuracies[size/5.0-1] = total_accuracy/float(num_trials)
-	print size
-	print "Train accuracy %f" %model.score(X_train,y_train)
-	print "Test accuracy %f" %model.score(X_test, y_test)
+	# print size
+	# print "Train accuracy %f" %model.score(X_train,y_train)
+	# print "Test accuracy %f" %model.score(X_test, y_test)
 
 fig = plt.figure()
 plt.plot(train_percentages, test_accuracies)

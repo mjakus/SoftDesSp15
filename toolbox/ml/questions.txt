@@ -1,0 +1,11 @@
+1. What is the general trend in the curve?
+	The general trend in the curve is upwards -- as you increase training percentage, test accuracy improves.
+
+2. Are there parts of the curve that appear to be noisier than others? Why?
+	The curve seems to be consistently noisy -- the accuracy will randomly increase and decrease based on its performace. However, the general trend remains upward.
+
+3. How many trials do you need to get a smooth curve?
+	At 5000 trials, the curve is almost completely smooth. However, this takes quite a while to run.
+
+4. What happens when you use different values of C?
+	As you increase C, the curve becomes much smoother and curves upwards (logarithmically). As you decrease C, the curve becomes much less smooth, and there appears to be much less correlation between training percentage and test accuracy.
